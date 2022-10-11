@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block content %}
+<div id="query-details" class="container m-5">
+    <h4>Query Summary</h4>
+    <table class="table table-striped">
+        <tbody>
+          <tr>
+            <th scope="row">Query Details</th>
+            <td>DNA SCANNING</td>
+          </tr>
+          <tr>
+            <th scope="row">Job ID</th>
+            <td>{{job_id}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Results For</th>
+            <td>{{parameters}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Status</th>
+            <td>{{status}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div id="loading-text">
+        <h5>We are processing your request, it may take several minutes based on your request. This page will automatically send you to the results page.</h5>
+        <h6>Bookmark this page to check later.</h6>
+    </div>
+</div>
+{% endblock content %}

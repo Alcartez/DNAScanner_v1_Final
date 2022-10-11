@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+{% block content %}
+<div id="query-details" class="container m-5">
+    <h4>Query Summary</h4>
+    <table class="table table-striped">
+        <tbody>
+          <tr>
+            <th scope="row">Query Details</th>
+            <td>DNA SCANNING</td>
+          </tr>
+          <tr>
+            <th scope="row">Job ID</th>
+            <td>{{ job_id }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Number of Sequences</th>
+            <td>{{ seq_no }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Parameters</th>
+            <td>{{ parameters_selected }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div id="results-panel" class="m-5 row">
+        <div id="result-files" class="col-sm">
+            <h5>Results Zip File</h5>
+            <a href="/static/Output/{{new_folder}}.zip">Download</a>
+          </div>
+          <div id="dash-link" class="col-sm">
+            <h5>Go to Plots Dashboard</h5>
+            <a href="/dash/{{new_folder}}/">Dashboard</a>
+          </div>
+      </div>
+      
+</div>
+{% endblock content %}

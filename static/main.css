@@ -1,0 +1,52 @@
+.navbar-brand {
+    position: relative;
+    left: 10px;
+}
+.push-left {
+    margin-right: 200px;
+}
+.push-right {
+    margin-left: 200px;
+}
+#format {
+    display: inline-block;
+}
+#btns div {
+    display: inline-block;
+}
+.chk {
+    display: inline-block;
+}
+#example-text {
+    display: none;
+}
+.c-nav-link {
+    text-decoration: none;
+    color : #fff;
+    margin: 0 5px;
+}
+.c-nav-link:hover {
+    color: #ccc;
+    cursor: pointer;
+}
+textarea {
+    height: 350px;
+    font-size: 16px !important;
+}
+.param {
+    color: rgba(17,60,117,1);
+}
+.parameter-heading {
+    color: rgba(17,60,117,1);
+}
+.cont {
+    color: rgba(17,60,117,1);
+}
+
+#results-panel div {
+    display: inline-block;
+}
+
+table tr td {
+    text-overflow: clip;
+}
