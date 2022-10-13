@@ -29,7 +29,7 @@ record_list = list(SeqIO.parse(fasta_path, "fasta"))
 windowWidth = int(arg[1])
 param_selections = arg[2][:-1].split(",") # User input must be selected from the webpage.
 output_folder = arg[3]
-
+inc_conc = arg[4]
 
 # Setting up directory tree
 os.makedirs('static/Output/' + output_folder + '/Parameters/Plots')
@@ -165,8 +165,8 @@ def ParameterCheck(record_list,n):
             param_df[param] = param_list
 
         # Export dataframe as csv
-        print(record.name + " writing to CSV ...")
-        param_df.to_csv('static/Output/' + output_folder + '/Parameters/Param%' + record.name + '%' + nString +"Nucleotide" + '.csv')
+            print(record.name + " writing to CSV ...")
+            param_df.to_csv('static/Output/' + output_folder + '/Parameters/Param%' + record.name + '%' + nString +"Nucleotide" + '.csv')
 
         spl = []
         for sp in range(len(param_df.index)):
@@ -201,4 +201,5 @@ for n in range(2,4):
 
     #Functions Called
     ParameterCheck(record_list,n)
-    Window_slidingBlock(record_list,windowWidth,n)
+    if inc_conc == "on":
+        Window_slidingBlock(record_list,windowWidth,n)

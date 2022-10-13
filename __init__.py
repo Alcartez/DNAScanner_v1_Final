@@ -48,12 +48,16 @@ def upload():
                 params.append(param[0])
         for para in params:
             params_arg += para + ","
-
         data = {
             'windowWidth':  request.form['windowWidth'],
             'params_arg' : params_arg,
-            'seq_no' : "-"
+            'seq_no' : "-",
         }
+        
+        if 'inc-conc' not in request.form:
+            data['inc-conc'] = "off"
+        else:
+            data['inc-conc'] = "on"
 
         if len(params) == 0:
             flash("Please select some parameters", "danger")
@@ -78,25 +82,25 @@ def upload():
             else:
                 flash("No file selected", "danger") 
         upload_task = scan.apply_async(args=[data])
-        return redirect(url_for("job", task = upload_task,parameters_selected=params_arg[:-1],seq_no = data['seq_no']))
+        return redirect(url_for("job", task = upload_task,parameters_selected=params_arg[:-1],seq_no = data['seq_no'],inc_conc = data['inc-conc']))
 
     return redirect(url_for('uploader'))
 
 
-@app.route('/<task>/<parameters_selected>/<seq_no>')
-def job(task, parameters_selected,seq_no):
+@app.route('/<task>/<parameters_selected>/<seq_no>/<inc_conc>')
+def job(task, parameters_selected,seq_no,inc_conc):
     parameters_selected = parameters_selected.replace(","," , ")
     if AsyncResult(task).ready() == False:
         status = "Pending"
     else:
         status = "Successful"
-        return redirect(url_for("results",job_id = task,parameters_selected=parameters_selected, seq_no = seq_no))
+        return redirect(url_for("results",job_id = task,parameters_selected=parameters_selected, seq_no = seq_no,inc_conc=inc_conc))
     return render_template('job.html', job_id = task, status = status, parameters = parameters_selected, title = "Pending")
 
-@app.route('/results/<job_id>/<parameters_selected>/<seq_no>')
-def results(job_id, parameters_selected,seq_no):
+@app.route('/results/<job_id>/<parameters_selected>/<seq_no>/<inc_conc>')
+def results(job_id, parameters_selected,seq_no,inc_conc):
     new_folder = AsyncResult(job_id).get()
-    return render_template('results.html',job_id = job_id, new_folder = new_folder, parameters_selected = parameters_selected, seq_no = seq_no, title = "Results")
+    return render_template('results.html',job_id = job_id, new_folder = new_folder, parameters_selected = parameters_selected, seq_no = seq_no, title = "Results",inc_conc=inc_conc)
 
 @app.route('/contact')
 def contact():

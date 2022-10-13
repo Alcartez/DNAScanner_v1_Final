@@ -54,7 +54,7 @@
 
                 $(function() {
                     $("#parameters li").addClass('list-inline-item m-2');
-                    var fasta_example = `>NC_000024.10:c2787682-2786855 Homo sapiens chromosome Y, GRCh38.p14 Primary Assembly
+                    var fasta_example_1 = `>NC_000024.10:c2787682-2786855 Homo sapiens chromosome Y, GRCh38.p14 Primary Assembly
 AGAAGTGAGTTTTGGATAGTAAAATAAGTTTCGAACTCTGGCACCTTTCAATTTTGTCGCACTCTCCTTG
 TTTTTGACAATGCAATCATATGCTTCTGCTATGTTAAGCGTATTCAACAGCGATGATTACAGTCCAGCTG
 TGCAAGAGAATATTCCCGCTCTCCGGAGAAGCTCTTCCTTCCTTTGCACTGAAAGCTGTAACTCTAAGTA
@@ -69,14 +69,36 @@ CGGGTAACATTGGCTACAAAGACCTACCTAGATGCTCCTTTTTACGATAACTTACAGCCCTCACTTTCTT
 ATGTTTAGTTTCAATATTGTTTTCTTTTCTCTGGCTAATAAAGGCCTTATTCATTTCA
 `;
 
+var fasta_example_2 = `>sequence A
+ggtaagtcctctagtacaaacacccccaatattgtgatataattaaaattatattcatat
+tctgttgccagaaaaaacacttttaggctatattagagccatcttctttgaagcgttgtc
+>sequence B
+ggtaagtgctctagtacaaacacccccaatattgtgatataattaaaattatattcatat
+tctgttgccagattttacacttttaggctatattagagccatcttctttgaagcgttgtc
+tatgcatcgatcgacgactg
+>sequence c
+ggtaagtgctctagtacaaacacccccaatattgtgatataattaaaattatattcatat
+tctgttgccagattttacac
+>sequence d
+ccagattttacacttttaggctatattagagccatcttctttgaagcgttgtc
+tatgcatcgatcgacgactg
+`
+
                     $('#example-btn').click(function() {
                         $("#example-text").toggle();
-                        $('#fasta_text').val(fasta_example);
+                        $('#fasta_text').val(fasta_example_1);
                         $('#fasta_text').change();
                     });
+
+                    $('#example-btn-2').click(function() {
+                        $("#example-text").toggle();
+                        $('#fasta_text').val(fasta_example_2);
+                        $('#fasta_text').change();
+                    });
+
                     $("#fasta_text").on('change keyup paste', function(e) {
                             let seq = $(this).val();
-                            const match_seq = seq.match(/^[^\S\n]*>[^\s>].*(?:\n[^\S\n]*[AGTC]+)+$/gm);
+                            const match_seq = seq.match(/^[^\S\n]*>[^\s>].*(?:\n[^\S\n]*[AGTCacgt]+)+$/gm);
                             if (match_seq) {
                                 const seq_no = match_seq.length
                             if (seq_no > 0)
@@ -94,7 +116,7 @@ ATGTTTAGTTTCAATATTGTTTTCTTTTCTCTGGCTAATAAAGGCCTTATTCATTTCA
                             alert("Window Width should be atleast 3")
                         }
                         let seq = $('textarea').val();
-                        const match_seq = seq.match(/^[^\S\n]*>[^\s>].*(?:\n[^\S\n]*[AGTC]+)+$/gm);
+                        const match_seq = seq.match(/^[^\S\n]*>[^\s>].*(?:\n[^\S\n]*[AGTCacgt]+)+$/gm);
                         if (!(seq.split("\n>").length == match_seq.length)) {
                             e.preventDefault();
                             alert("Please correct your FASTA text.");

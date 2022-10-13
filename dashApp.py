@@ -15,6 +15,7 @@ def create_dash_app(flask_app):
     dash_app.layout = html.Div([
            dcc.Location(id='url', refresh=False),
            dcc.Store(id="url-value"),
+           dcc.Store(id="inc-conc"),
            dcc.Dropdown(id="sequence-selector",
            placeholder="Select Sequence",
            ),
@@ -34,26 +35,32 @@ def create_dash_app(flask_app):
             ), 
     ])
 
-    @dash_app.callback(Output('url-value', 'data'),
+    @dash_app.callback([Output('url-value', 'data'),
+    Output('inc-conc', 'data')],
               Input('url', 'pathname'))
     def return_folder(pathname):
-        return pathname.split('/')[2]
+        return pathname.split('/')[2],pathname.split("/")[3]
 
     @dash_app.callback([
     Output(component_id="sequence-selector",component_property="options"),
     Output(component_id="graph-type",component_property="options"),
     Output(component_id="graph-y",component_property="options"),
-    Output(component_id="graph-figure",component_property="figure")
+    Output(component_id="graph-figure",component_property="figure"),
+    Output(component_id="sequence-selector",component_property="value"),
     ],
     [Input(component_id="url-value",component_property="data"),
+    Input(component_id="inc-conc",component_property="data"),
     Input(component_id="graph-type",component_property="value"),
     Input(component_id="sequence-selector",component_property="value"),
     Input(component_id="graph-y",component_property="value")
     ])
-    def dropdown_update(folder,graph_type,sequence,graph_y):
+    def dropdown_update(folder,inc_conc,graph_type,sequence,graph_y):
         print(x[6:].split("%")[0] for x in os.listdir("static/Output/" + folder + "/Parameters/")[:-1])
         sequences = [x[6:].split("%")[0] for x in os.listdir("static/Output/" + folder + "/Parameters/")[:-1]]
-        graph_types = ["Dinucleotide Concentration","Trinucleotide Concentration","Dinucleotide Parameters","Trinucleotide Parameters"]
+        if inc_conc == "on":
+            graph_types = ["Dinucleotide Concentration","Trinucleotide Concentration","Dinucleotide Parameters","Trinucleotide Parameters"]
+        else:
+            graph_types = ["Dinucleotide Parameters","Trinucleotide Parameters"]
         df = ""
         fig = ""
         dropdown_list = ""
@@ -82,7 +89,7 @@ def create_dash_app(flask_app):
             fig = px.line(df, x=spl, y=graph_y)
             fig.update_xaxes(rangeslider_visible=True) 
             fig.update_layout(title=f"{graph_y} {plot_type} Plot",xaxis_title="Position",yaxis_title=f"{graph_y} Block Score")         
-        return sequences, graph_types, dropdown_list, fig
+        return sequences, graph_types, dropdown_list, fig, sequences[0]
 
 
     return dash_app

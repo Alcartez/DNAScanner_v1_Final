@@ -22,9 +22,10 @@
             {{ form.fasta_text.label(class="form-control-label")}}          
             {{ form.fasta_text(class="form-control form-control-lg")}}
             </div>
-                <div class="btn-example m-3">
-                    <button class="btn btn-outline-warning" id="example-btn" type="button">Example</button>
-                </div>
+            <div class="row">
+                    <button class="btn btn-outline-warning m-3 col-sm" id="example-btn" type="button">Example 1</button>
+                    <button class="btn btn-outline-warning m-3 col-sm" id="example-btn-2" type="button">Example 2</button>
+            </div>
                 <div id="info-text">
                     <h6></h6>
                 </div>
@@ -64,10 +65,16 @@
                         {% endfor %}
                     </div>
                   </div>
-                  <div class="card">
+                  <div class="card m-3">
                     <div class="form-check chk m-2">
                         <input type="checkbox" name="check-all" class="form-check-input" id="check-all">
                         <label class="form-check-label param-label" for="check-all">Select all</label> 
+                    </div>
+                  </div>
+                  <div class="card m-3">
+                    <div class="form-check chk m-2">
+                        <input type="checkbox" name="inc-conc" class="form-check-input" id="inc-conc">
+                        <label class="form-check-label" for="inc-conc">Include Nucleotide Concentrations</label> 
                     </div>
                   </div>
                 <div id="btns">
