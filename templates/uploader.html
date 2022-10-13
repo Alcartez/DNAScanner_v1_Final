@@ -63,7 +63,24 @@
                             <label class="form-check-label param-label" for="{{param}}">{{ param }}</label> 
                         </div>
                         {% endfor %}
+
                     </div>
+                    <div class="card-body">
+                        {% for param in parameters['Dinucleotide Rules'] %}
+                        <div class="form-check chk m-2">
+                        <input type="checkbox" name="{{param}}" class="form-check-input param-checks">
+                        <label class="form-check-label param-label" for="{{param}}">{{ param }}</label>
+                        </div>
+                        {% endfor %}
+                        </div>
+                        <div class="card-body">
+                        {% for param in parameters['Trinucleotide Rules'] %}
+                        <div class="form-check chk m-2">
+                        <input type="checkbox" name="{{param}}" class="form-check-input param-checks">
+                        <label class="form-check-label param-label" for="{{param}}">{{ param }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>   
                   </div>
                   <div class="card m-3">
                     <div class="form-check chk m-2">

@@ -35,30 +35,42 @@ def upload():
         uploaded_file = request.files['fasta_file']
         file_name = uploaded_file.filename
         param_selections = []
+        nucleotide_selections = []
         params = []
+        nucleotides = []
         params_arg = ""
+        nucl_arg = ""
 
 
         for x in parameters['Dinucleotide']:
                 param_selections.append([x,request.form.getlist(x)])
         for y in parameters['Trinucleotide']:
                 param_selections.append([y,request.form.getlist(y)])
+        for q in parameters['Dinucleotide Rules']:
+                nucleotide_selections.append([q,request.form.getlist(q)])
+        for z in parameters['Trinucleotide Rules']:
+                nucleotide_selections.append([z,request.form.getlist(z)])
+
         for param in param_selections:
             if param[1] == ['on']:
                 params.append(param[0])
         for para in params:
             params_arg += para + ","
+
+        for nucl in nucleotide_selections:
+            if nucl[1] == ['on']:
+                nucleotides.append(nucl[0])
+        for nucl in nucleotides:
+            nucl_arg += nucl + ","
+
+
         data = {
             'windowWidth':  request.form['windowWidth'],
             'params_arg' : params_arg,
+            'nucl_arg' : nucl_arg,
             'seq_no' : "-",
         }
         
-        if 'inc-conc' not in request.form:
-            data['inc-conc'] = "off"
-        else:
-            data['inc-conc'] = "on"
-
         if len(params) == 0:
             flash("Please select some parameters", "danger")
 
@@ -82,25 +94,26 @@ def upload():
             else:
                 flash("No file selected", "danger") 
         upload_task = scan.apply_async(args=[data])
-        return redirect(url_for("job", task = upload_task,parameters_selected=params_arg[:-1],seq_no = data['seq_no'],inc_conc = data['inc-conc']))
+        return redirect(url_for("job", task = upload_task,parameters_selected=params_arg[:-1],seq_no = data['seq_no'],nucleotides_selected = nucl_arg[:-1]))
 
     return redirect(url_for('uploader'))
 
 
-@app.route('/<task>/<parameters_selected>/<seq_no>/<inc_conc>')
-def job(task, parameters_selected,seq_no,inc_conc):
+@app.route('/<task>/<parameters_selected>/<seq_no>/<nucleotides_selected>')
+def job(task, parameters_selected,seq_no,nucleotides_selected):
     parameters_selected = parameters_selected.replace(","," , ")
+    nucleotides_selected = nucleotides_selected.replace(","," , ")
     if AsyncResult(task).ready() == False:
         status = "Pending"
     else:
         status = "Successful"
-        return redirect(url_for("results",job_id = task,parameters_selected=parameters_selected, seq_no = seq_no,inc_conc=inc_conc))
-    return render_template('job.html', job_id = task, status = status, parameters = parameters_selected, title = "Pending")
+        return redirect(url_for("results",job_id = task,parameters_selected=parameters_selected, seq_no = seq_no,nucleotides_selected = nucleotides_selected))
+    return render_template('job.html', job_id = task, status = status, parameters = parameters_selected, title = "Running", nucleotides_selected = nucleotides_selected)
 
-@app.route('/results/<job_id>/<parameters_selected>/<seq_no>/<inc_conc>')
-def results(job_id, parameters_selected,seq_no,inc_conc):
+@app.route('/results/<job_id>/<parameters_selected>/<seq_no>/<nucl_arg>')
+def results(job_id, parameters_selected,seq_no,nucleotides_selected):
     new_folder = AsyncResult(job_id).get()
-    return render_template('results.html',job_id = job_id, new_folder = new_folder, parameters_selected = parameters_selected, seq_no = seq_no, title = "Results",inc_conc=inc_conc)
+    return render_template('results.html',job_id = job_id, new_folder = new_folder, parameters_selected = parameters_selected, seq_no = seq_no, title = "Results",nucleotides_selected = nucleotides_selected)
 
 @app.route('/contact')
 def contact():

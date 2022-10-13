@@ -17,7 +17,7 @@ celery= Celery('tasks',
 @celery.task(name="app.scan", bind = True)
 def scan(self,data):
     output_folder = str(uuid.uuid4())
-    run_script = os.system(f"python3 DNAScanner.py {data['file_name']}%%{data['windowWidth']}%%{data['params_arg']}%%{output_folder}")
+    run_script = os.system(f"python3 DNAScanner.py {data['file_name']}%%{data['windowWidth']}%%{data['params_arg']}%%{data['nucl_arg']}%%{output_folder}")
     if (run_script == 0):
         print("Making ZIP FILE")
         shutil.make_archive(f"static/Output/{output_folder}", 'zip', f"static/output/{output_folder}")
