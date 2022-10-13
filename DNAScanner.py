@@ -29,7 +29,8 @@ record_list = list(SeqIO.parse(fasta_path, "fasta"))
 windowWidth = int(arg[1])
 param_selections = arg[2][:-1].split(",") # User input must be selected from the webpage.
 output_folder = arg[3]
-inc_conc = arg[4]
+#inc_conc = arg[4]
+SlidingWindow_param_selections = arg[4]
 
 # Setting up directory tree
 os.makedirs('static/Output/' + output_folder + '/Parameters/Plots')
@@ -63,68 +64,72 @@ def Window_slidingBlock(record_list,windowWidth,n):
     epl = [] # List for ending positions for window
     seq_list = [] # Declare empty list of sequences
     Block_size = int((windowWidth - n + 1) * len(record_list) )
-    print("Block Size : " , Block_size )
-    Nucleic_acid_list = VariableGenerator(n,"")
-
+    print("Block Size : " , Block_size )    
+    Nucleic_acid_list = VariableGenerator(n,"")  
+ 
     for record in record_list:
-        seq_list.append(record.seq) # We make a list of sequences as seq_list
-
+        seq_list.append(record.seq) # We make a list of sequences as seq_list      
+ 
     #Looping through the list of sequences
     seq = max(seq_list,key=len)      # Taking the longest sequence as the length of the DNA Scanner to cover most ground
     length = len(seq)
     Block_score_variables = VariableGenerator(n,"_Block_score")
-
+ 
     for var in Block_score_variables:
-        globals()[var] = []
-
+        globals()[var] = []        
+ 
     # Loop through entire sequence
     for i in range(length - windowWidth + 1):
         Count_variables = VariableGenerator(n,"Count")
         for var in Count_variables:
-            globals()[var] = 0
-
+            globals()[var] = 0            
+ 
         # In each iteration, loop though window
         for j in range(i, windowWidth + i - repairIndex):
             for seq in seq_list :
                 for na in Nucleic_acid_list:
                     if seq[j:j+n] == na:
-                        globals()[na+"Count"] += 1
-
+                        globals()[na+"Count"] += 1                      
+ 
         # Update counts of each nucleotide in respective dictionary
         for z in Nucleic_acid_list:
             a = globals()[str(z+"_Block_score")]
             b = globals()[str(z+"Count")]
-            a.append(b/Block_size)
+            a.append(b/Block_size)  
             start_pos = i+1
-            end_pos = windowWidth+i
+            end_pos = windowWidth+i                
         spl.append(start_pos)
         epl.append(end_pos)
-
+       
     #Creating a dataframe
     df = pd.DataFrame()
     df.insert(0, "Starting Position" ,spl)
     df.insert(1, "Ending Position" ,epl)
-    print("Creating Dataframe")
-
+    print("Creating Dataframe")    
+ 
+    Extract_Colnames = ["Starting Position" , "Ending Position"]
+ 
     for j in range(len(Nucleic_acid_list)):
         df.insert(j+2, str(Nucleic_acid_list[j]), globals()[str(Nucleic_acid_list[j]+"_Block_score")])
-
+ 
+    df = df.filter(Extract_Colnames + SlidingWindow_param_selections) 
+ 
     # Exporting the output as csv
     print("Writing to CSV ...")
-    df.to_csv('static/Output/' + output_folder + '/Nucleotide_Concentration/DNAScanner_'+str(nString)+'NucleotideRule__Output.csv')
-
+    df.to_csv('Output/Nucleotide_Concentration/DNAScanner_'+str(nString)+'NucleotideRule__Output.csv')  
+ 
     # Plotting
     print("Nucleotides : Generating Plot(s) ...")
-
+ 
     for col_val in df.columns.values[2:] :
         ## PLOTLY ##
-        print("Making Plotly Graph ...")
+        print("Making Plotly Graph for " + col_val)
         fig = px.line(df, x=df.columns.values[0], y=col_val,)
         fig.update_xaxes(rangeslider_visible=True)
-        fig.update_layout(title=str(col_val)+" Concentration Plot",xaxis_title="Position",yaxis_title=str(col_val)+" Block Score")
-        fig.write_html("static/Output/" + output_folder + "/Nucleotide_Concentration/Plots/"+str(col_val)+"_Nucleotide_Rule_Plot.html")
-    print("Done .... \n")
-    return None
+        fig.update_layout(title=str(col_val)+" Concentration Plot",xaxis_title="Position",yaxis_title=str(col_val)+" Block Score")        
+        fig.write_html("Output/Nucleotide_Concentration/Plots/"+str(col_val)+"_Nucleotide_Rule_Plot.html")              
+    print("Done .... \n")                                
+
 
 # Parameter Check Function to create files based on parameters
 def ParameterCheck(record_list,n):
@@ -182,24 +187,36 @@ def ParameterCheck(record_list,n):
     return None
 
 for n in range(2,4):
-    ## User Inputs ##
-    print("\nImporting parameters ...")
     if n == 2:
-        param_input_df = pd.read_csv('Parameter_Files/Parameter_Sheet_Dinucleotide - Sheet1.csv')
-        #param_input_df = param_cleaner(param_input_df,param_selections)
-        #print(param_input_df.columns)
+        param_input_df = pd.read_csv(r'Parameter_Files\Parameter_Sheet_Dinucleotide - Sheet1.csv')
         nString = "Di"
         repairIndex = 1
+        print("\nImporting " + nString +"nucleotide parameters ...")
     elif n == 3:
-        param_input_df = pd.read_csv('Parameter_Files/Parameter_Files_Trinucleotide - Sheet1.csv')
-        #param_input_df = param_cleaner(param_input_df,param_selections)
-        #print(param_input_df.columns)
+        param_input_df = pd.read_csv(r'Parameter_Files\Parameter_Files_Trinucleotide - Sheet1.csv')
         nString = "Tri"
         repairIndex = 1
+        print("\nImporting " + nString +"nucleotide parameters ...")
     else :
         print("\n DON'T BREAK MY SCRIPT!!")
-
+ 
     #Functions Called
     ParameterCheck(record_list,n)
-    if inc_conc == "on":
-        Window_slidingBlock(record_list,windowWidth,n)
+ 
+for n in range(2,4): 
+    if n == 1:
+        nString = "Mono"
+        repairIndex = 0
+        print("\nRunning SLiding Window on " + nString +"nucleotides ... \n")
+    if n == 2:
+        nString = "Di"
+        repairIndex = 1
+        print("\nRunning SLiding Window on " + nString +"nucleotides ... \n")
+    elif n == 3:
+        nString = "Tri"
+        repairIndex = 1
+        print("\nRunning SLiding Window on " + nString +"nucleotides ... \n")
+    else :
+        print("\n DON'T BREAK MY SCRIPT!!")
+ 
+    Window_slidingBlock(record_list,windowWidth,n)
